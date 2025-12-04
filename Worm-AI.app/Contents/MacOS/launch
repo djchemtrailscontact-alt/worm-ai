@@ -1,0 +1,34 @@
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🐛 Worm-AI macOS Desktop App Launcher
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Get the app directory
+APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+WORM_AI_DIR="$(dirname "$APP_DIR")"
+
+# Change to project directory
+cd "$WORM_AI_DIR"
+
+# Activate virtual environment if it exists
+if [[ -d "$WORM_AI_DIR/venv" ]]; then
+    source "$WORM_AI_DIR/venv/bin/activate"
+fi
+
+# Check if package is installed
+if ! command -v worm-ai &> /dev/null; then
+    # Try to install if not found
+    if [[ -f "$WORM_AI_DIR/pyproject.toml" ]]; then
+        osascript -e 'display dialog "Worm-AI is not installed.\n\nInstalling now..." buttons {"OK"} default button 1 with title "Worm-AI"'
+        pip3 install -e "$WORM_AI_DIR" || {
+            osascript -e 'display dialog "Installation failed.\n\nPlease run: pip3 install -e ." buttons {"OK"} default button 1 with title "Worm-AI" with icon stop'
+            exit 1
+        }
+    else
+        osascript -e 'display dialog "Worm-AI project not found.\n\nPlease ensure the app is in the correct location." buttons {"OK"} default button 1 with title "Worm-AI" with icon stop'
+        exit 1
+    fi
+fi
+
+# Launch GUI mode
+exec worm-ai --gui
