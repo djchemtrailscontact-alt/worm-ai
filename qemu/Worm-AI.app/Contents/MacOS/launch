@@ -1,0 +1,35 @@
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🐛 Worm-AI macOS App Launcher
+# Double-click this .app to launch Worm-AI in QEMU
+# ═══════════════════════════════════════════════════════════════════════════════
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+QEMU_DIR="$(dirname "$APP_DIR")"
+
+# Check if QEMU is installed
+if ! command -v qemu-system-x86_64 &> /dev/null; then
+    osascript -e 'display dialog "QEMU is not installed.\n\nInstall with:\nbrew install qemu" buttons {"OK"} default button 1 with title "Worm-AI" with icon stop'
+
+    # Ask to install
+    RESPONSE=$(osascript -e 'display dialog "Would you like to install QEMU via Homebrew?" buttons {"Cancel", "Install"} default button 2 with title "Worm-AI"' 2>/dev/null)
+
+    if [[ "$RESPONSE" == *"Install"* ]]; then
+        if ! command -v brew &> /dev/null; then
+            osascript -e 'display dialog "Homebrew is not installed.\n\nVisit: https://brew.sh" buttons {"OK"} default button 1 with title "Worm-AI"'
+            open "https://brew.sh"
+            exit 1
+        fi
+
+        # Open Terminal and install QEMU
+        osascript -e 'tell application "Terminal" to do script "brew install qemu && echo \"QEMU installed! You can now launch Worm-AI.\""'
+        exit 0
+    fi
+    exit 1
+fi
+
+# Launch the QEMU script
+cd "$QEMU_DIR"
+exec "$QEMU_DIR/launch.sh" run
+
