@@ -10,16 +10,18 @@ if os.path.isdir(OBF):
         sys.path.insert(0, OBF)
     try:
         from pytransform import pyarmor_runtime  # type: ignore
+
         pyarmor_runtime()
     except Exception:
         pass
 
-import json
 import webbrowser
-from core import WormAi, Log
+
+from core import Log, WormAi
 
 PROMPT_FILE = "system-prompt.txt"
 proxy = os.getenv("WORM_PROXY") or os.getenv("GROK_PROXY", "")
+
 
 def get_system_prompt():
     try:
@@ -29,6 +31,7 @@ def get_system_prompt():
     except Exception as e:
         Log.Error(f"Failed to read system prompt: {e}")
         return ""
+
 
 def send_message(client: WormAi, message: str, extra_data: dict | None):
     if not extra_data:
@@ -43,12 +46,15 @@ def send_message(client: WormAi, message: str, extra_data: dict | None):
         Log.Error(f"Worm-Ai error: {e}")
         return f"[Worm-Ai Error] {e}", extra_data
 
+
 def main():
     current_proxy = proxy
     client = WormAi(current_proxy)
     extra_data = None
     last_response = ""
-    print("Worm-Ai CLI — type your message and press Enter. Commands: /exit /restart /web /proxy <url>")
+    print(
+        "Worm-Ai CLI — type your message and press Enter. Commands: /exit /restart /web /proxy <url>"
+    )
     print("Made With <3 | t.me/xsocietyforums | github.com/kafyasfngl")
     while True:
         try:
@@ -74,7 +80,11 @@ def main():
                     continue
                 path = os.path.join(os.getcwd(), "wormai_response.html")
                 with open(path, "w", encoding="utf-8") as f:
-                    f.write("<html><body><pre>" + last_response.replace("<", "&lt;").replace(">", "&gt;") + "</pre></body></html>")
+                    f.write(
+                        "<html><body><pre>"
+                        + last_response.replace("<", "&lt;").replace(">", "&gt;")
+                        + "</pre></body></html>"
+                    )
                 webbrowser.open("file://" + path)
                 continue
 
@@ -84,6 +94,7 @@ def main():
         except KeyboardInterrupt:
             print("\nInterrupted — exiting.")
             return
+
 
 if __name__ == "__main__":
     main()

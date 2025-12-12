@@ -32,4 +32,3 @@ fi
 # Launch the QEMU script
 cd "$QEMU_DIR"
 exec "$QEMU_DIR/launch.sh" run
-
