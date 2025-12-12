@@ -8,12 +8,12 @@ __author__ = "Worm-AI Team"
 
 from .client import GrokClient, WormAI
 from .exceptions import (
-    WormAIError,
+    AuthenticationError,
     GrokAPIError,
     NetworkError,
-    AuthenticationError,
-    ValidationError,
     StreamingError,
+    ValidationError,
+    WormAIError,
 )
 
 __all__ = [
@@ -32,4 +32,5 @@ __all__ = [
 def launch_gui():
     """Launch the GUI application."""
     from .gui import main
+
     main()

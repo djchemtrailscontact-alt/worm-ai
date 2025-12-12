@@ -40,16 +40,20 @@ def validate_proxy_url(proxy: str) -> str:
 
     if parsed.scheme not in valid_schemes:
         raise ValidationError(
-            f"Invalid proxy scheme: {parsed.scheme}. "
-            f"Must be one of: {', '.join(valid_schemes)}"
+            f"Invalid proxy scheme: {parsed.scheme}. " f"Must be one of: {', '.join(valid_schemes)}"
         )
 
     if not parsed.hostname:
         raise ValidationError("Proxy URL must include a hostname")
 
     # Validate port if specified
-    if parsed.port is not None and (parsed.port < 1 or parsed.port > 65535):
-        raise ValidationError(f"Invalid proxy port: {parsed.port}")
+    # Validate port - urlparse raises ValueError for ports > 65535
+    try:
+        port = parsed.port
+        if port is not None and port < 1:
+            raise ValidationError(f"Invalid proxy port: {port}")
+    except ValueError as e:
+        raise ValidationError(f"Invalid proxy port: {e}") from e
 
     return proxy
 
@@ -78,8 +82,8 @@ def validate_cookie(cookie: str) -> str:
     if len(cookie) > 4096:  # HTTP cookie size limit
         raise ValidationError("Cookie exceeds maximum length (4096 characters)")
 
-    # Basic format check (should contain = or be a token)
-    if not re.match(r'^[a-zA-Z0-9_\-=.;]+$', cookie):
+    # Basic format check (allow common cookie characters including space, /, :, etc.)
+    if not re.match(r"^[a-zA-Z0-9_\-=.;:/ ]+$", cookie):
         raise ValidationError("Cookie contains invalid characters")
 
     return cookie
@@ -99,8 +103,8 @@ def validate_message(message: str, max_length: int = 100000) -> str:
     Raises:
         ValidationError: If message is invalid
     """
-    if not message or not isinstance(message, str):
-        raise ValidationError("Message must be a non-empty string")
+    if not isinstance(message, str):
+        raise ValidationError("Message must be a string")
 
     message = message.strip()
 
@@ -115,7 +119,7 @@ def validate_message(message: str, max_length: int = 100000) -> str:
 
     # Check for potentially malicious patterns (basic)
     # This is a simple check - more sophisticated validation could be added
-    if len(message.encode('utf-8')) > max_length * 4:  # Account for multi-byte chars
+    if len(message.encode("utf-8")) > max_length * 4:  # Account for multi-byte chars
         raise ValidationError("Message contains invalid encoding")
 
     return message
@@ -144,8 +148,6 @@ def validate_system_prompt(prompt: Optional[str], max_length: int = 10000) -> Op
     prompt = prompt.strip()
 
     if len(prompt) > max_length:
-        raise ValidationError(
-            f"System prompt exceeds maximum length ({max_length} characters)"
-        )
+        raise ValidationError(f"System prompt exceeds maximum length ({max_length} characters)")
 
     return prompt if prompt else None

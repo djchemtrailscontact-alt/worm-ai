@@ -5,29 +5,26 @@ For educational and research purposes only.
 """
 
 import json
-import time
 import logging
-from typing import Optional, Generator, Dict, Any
-from urllib.parse import urlparse
+import time
+from typing import Any, Dict, Generator, Optional
 
 try:
     from curl_cffi import requests
-except ImportError:
-    raise ImportError(
-        "curl_cffi is required. Install with: pip install curl_cffi"
-    )
+except ImportError as err:
+    raise ImportError("curl_cffi is required. Install with: pip install curl_cffi") from err
 
 from .exceptions import (
+    AuthenticationError,
     GrokAPIError,
     NetworkError,
-    AuthenticationError,
-    ValidationError,
     StreamingError,
+    ValidationError,
 )
 from .validation import (
-    validate_proxy_url,
     validate_cookie,
     validate_message,
+    validate_proxy_url,
     validate_system_prompt,
 )
 
@@ -87,7 +84,9 @@ class GrokClient:
         self.conversation_id: Optional[str] = None
         self.response_id: Optional[str] = None
 
-        logger.debug(f"GrokClient initialized (proxy={bool(self.proxy)}, cookie={bool(self.cookie)})")
+        logger.debug(
+            f"GrokClient initialized (proxy={bool(self.proxy)}, cookie={bool(self.cookie)})"
+        )
 
     def _get_headers(self) -> Dict[str, str]:
         """Get headers with optional cookie."""
@@ -96,9 +95,7 @@ class GrokClient:
             headers["cookie"] = self.cookie
         return headers
 
-    def _build_payload(
-        self, message: str, system_prompt: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def _build_payload(self, message: str, system_prompt: Optional[str] = None) -> Dict[str, Any]:
         """
         Build the request payload.
 
@@ -173,7 +170,7 @@ class GrokClient:
         proxies = {"http": self.proxy, "https": self.proxy} if self.proxy else None
 
         # Retry logic for transient failures
-        last_exception = None
+        last_exception: Optional[Exception] = None
         for attempt in range(self.max_retries):
             try:
                 response = requests.post(
@@ -181,7 +178,7 @@ class GrokClient:
                     headers=self._get_headers(),
                     json=payload,
                     impersonate="chrome120",
-                    proxies=proxies,
+                    proxies=proxies,  # type: ignore[arg-type]
                     stream=True,
                     timeout=self.timeout,
                 )
@@ -195,9 +192,13 @@ class GrokClient:
                     )
                 elif response.status_code == 429:
                     # Rate limiting - wait and retry
-                    retry_after = int(response.headers.get("Retry-After", self.retry_delay * (attempt + 1)))
+                    retry_after = int(
+                        response.headers.get("Retry-After", self.retry_delay * (attempt + 1))
+                    )
                     if attempt < self.max_retries - 1:
-                        logger.warning(f"Rate limited, waiting {retry_after}s before retry {attempt + 1}/{self.max_retries}")
+                        logger.warning(
+                            f"Rate limited, waiting {retry_after}s before retry {attempt + 1}/{self.max_retries}"
+                        )
                         time.sleep(retry_after)
                         continue
                     raise GrokAPIError(
@@ -233,7 +234,7 @@ class GrokClient:
                             if "text" in resp:
                                 new_text = resp["text"]
                                 if len(new_text) > len(full_text):
-                                    chunk = new_text[len(full_text):]
+                                    chunk = new_text[len(full_text) :]
                                     full_text = new_text
                                     yield chunk
 
@@ -255,10 +256,12 @@ class GrokClient:
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
                 last_exception = NetworkError(f"Network error: {str(e)}")
                 if attempt < self.max_retries - 1:
-                    logger.warning(f"Network error, retrying in {self.retry_delay}s (attempt {attempt + 1}/{self.max_retries})")
+                    logger.warning(
+                        f"Network error, retrying in {self.retry_delay}s (attempt {attempt + 1}/{self.max_retries})"
+                    )
                     time.sleep(self.retry_delay * (attempt + 1))  # Exponential backoff
                     continue
-                raise last_exception
+                raise last_exception from e
 
             except (GrokAPIError, AuthenticationError):
                 # Don't retry on API/auth errors
@@ -267,10 +270,12 @@ class GrokClient:
             except Exception as e:
                 last_exception = StreamingError(f"Unexpected error: {type(e).__name__}: {str(e)}")
                 if attempt < self.max_retries - 1:
-                    logger.warning(f"Error, retrying in {self.retry_delay}s (attempt {attempt + 1}/{self.max_retries})")
+                    logger.warning(
+                        f"Error, retrying in {self.retry_delay}s (attempt {attempt + 1}/{self.max_retries})"
+                    )
                     time.sleep(self.retry_delay * (attempt + 1))
                     continue
-                raise last_exception
+                raise last_exception from e
 
         # If we get here, all retries failed
         if last_exception:

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient matching CLI banner colors (red � yellow � green) -->
+    <linearGradient id="wormGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff3333;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffcc00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#33ff33;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Terminal screen effect -->
+    <linearGradient id="screenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f1a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#0a0a14" stroke="url(#wormGradient)" stroke-width="4"/>
+
+  <!-- Terminal window frame -->
+  <rect x="80" y="100" width="352" height="280" rx="12" ry="12" fill="url(#screenGradient)" stroke="#333" stroke-width="2"/>
+
+  <!-- Terminal title bar -->
+  <rect x="80" y="100" width="352" height="32" rx="12" ry="12" fill="#1e1e2e"/>
+  <rect x="80" y="120" width="352" height="12" fill="#1e1e2e"/>
+
+  <!-- Terminal buttons -->
+  <circle cx="104" cy="116" r="6" fill="#ff5f56"/>
+  <circle cx="124" cy="116" r="6" fill="#ffbd2e"/>
+  <circle cx="144" cy="116" r="6" fill="#27ca40"/>
+
+  <!-- Worm character - stylized segmented worm -->
+  <g filter="url(#glow)">
+    <!-- Worm body segments -->
+    <ellipse cx="180" cy="260" rx="28" ry="24" fill="#ff3333" opacity="0.9"/>
+    <ellipse cx="220" cy="250" rx="30" ry="26" fill="#ff6633" opacity="0.9"/>
+    <ellipse cx="265" cy="245" rx="32" ry="28" fill="#ffaa00" opacity="0.9"/>
+    <ellipse cx="312" cy="250" rx="30" ry="26" fill="#aaff00" opacity="0.9"/>
+    <ellipse cx="355" cy="260" rx="28" ry="24" fill="#33ff33" opacity="0.9"/>
+
+    <!-- Worm head -->
+    <ellipse cx="395" cy="265" rx="22" ry="20" fill="#33ff66"/>
+
+    <!-- Eyes -->
+    <circle cx="402" cy="258" r="6" fill="#0a0a14"/>
+    <circle cx="404" cy="256" r="2" fill="#ffffff"/>
+
+    <!-- Antenna -->
+    <path d="M 408 248 Q 420 230 415 215" stroke="#33ff66" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="415" cy="215" r="4" fill="#33ff66"/>
+  </g>
+
+  <!-- Binary/code rain effect -->
+  <text x="100" y="330" fill="#33ff3388" font-family="monospace" font-size="10">01001000 01000001</text>
+  <text x="280" y="345" fill="#33ff3355" font-family="monospace" font-size="8">10110010</text>
+  <text x="120" y="360" fill="#33ff3344" font-family="monospace" font-size="9">11010101 00101</text>
+
+  <!-- "WORM-AI" text -->
+  <text x="256" y="440" text-anchor="middle" fill="url(#wormGradient)" font-family="monospace" font-weight="bold" font-size="48" letter-spacing="4" filter="url(#glow)">WORM-AI</text>
+
+  <!-- Subtitle -->
+  <text x="256" y="470" text-anchor="middle" fill="#888888" font-family="monospace" font-size="14">GROK API CLI</text>
+</svg>

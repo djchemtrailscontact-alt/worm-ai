@@ -6,24 +6,23 @@ A modern GUI client for Grok AI.
 
 import os
 import threading
-import webbrowser
 from pathlib import Path
 from typing import Optional
 
 try:
     import customtkinter as ctk
-except ImportError:
+except ImportError as err:
     raise ImportError(
         "customtkinter is required for GUI. Install with: pip install customtkinter"
-    )
+    ) from err
 
 from .client import WormAI
 from .exceptions import (
-    WormAIError,
+    AuthenticationError,
     GrokAPIError,
     NetworkError,
-    AuthenticationError,
     ValidationError,
+    WormAIError,
 )
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -294,6 +293,10 @@ class WormAIApp(ctk.CTk):
         """Stream response from Grok (runs in thread)."""
         self._append_ai_start()
 
+        if self.client is None:
+            self._append_error("Client not initialized")
+            return
+
         try:
             for chunk in self.client.chat(message):
                 if not self.is_streaming:
@@ -343,7 +346,8 @@ class WormAIApp(ctk.CTk):
         elif command == "/clear":
             self._clear_chat()
         elif command == "/restart":
-            self.client.reset()
+            if self.client:
+                self.client.reset()
             self.conversation_history = []
             self._append_system("🔄 Conversation reset")
         elif command == "/proxy":
@@ -355,7 +359,7 @@ class WormAIApp(ctk.CTk):
                 self._append_system("Usage: /proxy <url>")
         elif command == "/jailbreak":
             prompt = self._load_system_prompt()
-            if prompt:
+            if prompt and self.client:
                 self.client.set_system_prompt(prompt)
                 self._append_system("😈 Jailbreak mode enabled")
             else:
@@ -400,7 +404,7 @@ class WormAIApp(ctk.CTk):
     # Chat Display Methods
     # ─────────────────────────────────────────────────────────────────────────
 
-    def _append_text(self, text: str, color: str = None):
+    def _append_text(self, text: str, color: Optional[str] = None):
         """Append text to chat display."""
         self.chat_display.configure(state="normal")
         self.chat_display.insert("end", text)
@@ -409,13 +413,15 @@ class WormAIApp(ctk.CTk):
 
     def _append_user(self, message: str):
         """Append user message."""
-        self._append_text(f"\n┌──[YOU]──────────────────────────────────────\n")
+        self._append_text("\n┌──[YOU]──────────────────────────────────────\n")
         self._append_text(f"│ {message}\n")
-        self._append_text(f"└─────────────────────────────────────────────\n")
+        self._append_text("└─────────────────────────────────────────────\n")
 
     def _append_ai_start(self):
         """Start AI response block."""
-        self.after(0, lambda: self._append_text(f"\n┌──[GROK]─────────────────────────────────────\n│ "))
+        self.after(
+            0, lambda: self._append_text("\n┌──[GROK]─────────────────────────────────────\n│ ")
+        )
 
     def _append_ai_chunk(self, chunk: str):
         """Append AI response chunk (thread-safe)."""
@@ -425,7 +431,7 @@ class WormAIApp(ctk.CTk):
 
     def _append_ai_end(self):
         """End AI response block."""
-        self._append_text(f"\n└─────────────────────────────────────────────\n")
+        self._append_text("\n└─────────────────────────────────────────────\n")
 
     def _append_system(self, message: str):
         """Append system message."""

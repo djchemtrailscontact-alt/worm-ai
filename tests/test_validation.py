@@ -1,13 +1,14 @@
 """Tests for validation module."""
 
 import pytest
+
+from wormai.exceptions import ValidationError
 from wormai.validation import (
-    validate_proxy_url,
     validate_cookie,
     validate_message,
+    validate_proxy_url,
     validate_system_prompt,
 )
-from wormai.exceptions import ValidationError
 
 
 class TestProxyValidation:

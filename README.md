@@ -1,9 +1,18 @@
-# 🐛 Worm-AI CLI — GrokApi Edition
+<p align="center">
+  <img src="assets/banner.svg" alt="Worm-AI Banner" width="800"/>
+</p>
+
+<p align="center">
+  <a href="#-features"><img src="https://img.shields.io/badge/Features-🚀-blue" alt="Features"/></a>
+  <a href="#-installation"><img src="https://img.shields.io/badge/Install-⚙️-green" alt="Install"/></a>
+  <a href="#-usage"><img src="https://img.shields.io/badge/Usage-💬-yellow" alt="Usage"/></a>
+  <img src="https://img.shields.io/badge/Python-3.9+-blue" alt="Python 3.9+"/>
+  <img src="https://img.shields.io/badge/Coverage-57%25-yellowgreen" alt="Coverage"/>
+</p>
 
 **Worm-AI CLI** is a sleek command-line interface (CLI) for interacting with Grok models through an **unofficial reverse-engineered API wrapper**.
 It features jailbreak injection, a customizable terminal UI, and a lightweight design for fast and flexible LLM interaction.
 
-> ⚡ Lightweight. Powerful. Terminal-native.
 > Built with ❤️ by [@kafyasfngl](https://github.com/kafyasfngl)
 
 ---
@@ -53,7 +62,6 @@ python3 main.py
 
 ---
 
-
 ## 💬 Usage
 
 Run the CLI:
@@ -77,7 +85,6 @@ You can change the terminal experience to your style:
 * **Banner color** & ASCII logo
 * **Prompt symbol**
 * **Typing animation speed**
-
 
 ---
 

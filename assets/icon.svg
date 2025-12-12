@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient matching CLI banner colors -->
+    <linearGradient id="wormGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff3333"/>
+      <stop offset="50%" style="stop-color:#ffcc00"/>
+      <stop offset="100%" style="stop-color:#33ff33"/>
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <circle cx="128" cy="128" r="120" fill="#0a0a14"/>
+  <circle cx="128" cy="128" r="116" fill="none" stroke="url(#wormGrad)" stroke-width="3"/>
+
+  <!-- Stylized worm forming "W" shape -->
+  <g filter="url(#glow)">
+    <!-- Worm body - curved W shape -->
+    <path d="M 50 80
+             Q 70 160, 90 120
+             Q 110 80, 128 130
+             Q 146 80, 166 120
+             Q 186 160, 206 80"
+          stroke="url(#wormGrad)"
+          stroke-width="20"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          fill="none"/>
+
+    <!-- Worm head -->
+    <circle cx="206" cy="80" r="16" fill="#33ff33"/>
+
+    <!-- Eye -->
+    <circle cx="212" cy="76" r="5" fill="#0a0a14"/>
+    <circle cx="214" cy="74" r="2" fill="#ffffff"/>
+
+    <!-- Antenna -->
+    <path d="M 218 68 Q 230 50 225 40" stroke="#33ff33" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="225" cy="40" r="4" fill="#33ff33"/>
+
+    <!-- Tail -->
+    <circle cx="50" cy="80" r="10" fill="#ff3333"/>
+  </g>
+
+  <!-- AI text -->
+  <text x="128" y="200" text-anchor="middle" fill="#888" font-family="monospace" font-weight="bold" font-size="32">AI</text>
+</svg>

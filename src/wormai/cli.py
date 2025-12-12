@@ -6,24 +6,24 @@ A terminal-based AI chat client for Grok.
 For educational and research purposes only.
 """
 
+import argparse
+import logging
 import os
 import sys
-import time
-import argparse
 import webbrowser
-import logging
 from pathlib import Path
 from typing import Optional
 
-from colorama import Fore, Style, init as colorama_init
+from colorama import Fore, Style
+from colorama import init as colorama_init
 
 from .client import WormAI
 from .exceptions import (
-    WormAIError,
+    AuthenticationError,
     GrokAPIError,
     NetworkError,
-    AuthenticationError,
     ValidationError,
+    WormAIError,
 )
 
 # Configure logging
@@ -173,17 +173,23 @@ def interactive_mode(proxy: Optional[str] = None, cookie: Optional[str] = None):
     jailbreak_enabled = False
 
     if system_prompt:
-        print(f"{Fore.YELLOW}[*] System prompt loaded ({len(system_prompt)} chars){Style.RESET_ALL}")
+        print(
+            f"{Fore.YELLOW}[*] System prompt loaded ({len(system_prompt)} chars){Style.RESET_ALL}"
+        )
         print(f"{Fore.YELLOW}[*] Use /jailbreak to enable it{Style.RESET_ALL}")
 
     if proxy:
         print(f"{Fore.CYAN}[*] Proxy: {proxy}{Style.RESET_ALL}")
 
-    print(f"\n{Fore.WHITE}Type your message and press Enter. Use /help for commands.{Style.RESET_ALL}")
-    print(f"{Fore.MAGENTA}Made with 💀 | t.me/xsocietyforums | github.com/kafyasfngl{Style.RESET_ALL}\n")
+    print(
+        f"\n{Fore.WHITE}Type your message and press Enter. Use /help for commands.{Style.RESET_ALL}"
+    )
+    print(
+        f"{Fore.MAGENTA}Made with 💀 | t.me/xsocietyforums | github.com/kafyasfngl{Style.RESET_ALL}\n"
+    )
 
     last_response = ""
-    conversation_log = []
+    conversation_log: list[tuple[str, str]] = []
 
     while True:
         try:
@@ -344,25 +350,29 @@ Made with 💀 | t.me/xsocietyforums | github.com/kafyasfngl
     )
 
     parser.add_argument(
-        "-p", "--proxy",
+        "-p",
+        "--proxy",
         metavar="URL",
         help="Proxy URL (e.g., socks5://127.0.0.1:9050)",
     )
 
     parser.add_argument(
-        "-c", "--cookie",
+        "-c",
+        "--cookie",
         metavar="COOKIE",
         help="Session cookie for authenticated requests",
     )
 
     parser.add_argument(
-        "-v", "--version",
+        "-v",
+        "--version",
         action="version",
         version="%(prog)s 1.0.0",
     )
 
     parser.add_argument(
-        "-g", "--gui",
+        "-g",
+        "--gui",
         action="store_true",
         help="Launch the graphical user interface",
     )
@@ -373,10 +383,13 @@ Made with 💀 | t.me/xsocietyforums | github.com/kafyasfngl
     if args.gui:
         try:
             from .gui import main as gui_main
+
             gui_main()
             return
-        except ImportError as e:
-            print(f"{Fore.RED}[!] GUI requires customtkinter: pip install customtkinter{Style.RESET_ALL}")
+        except ImportError:
+            print(
+                f"{Fore.RED}[!] GUI requires customtkinter: pip install customtkinter{Style.RESET_ALL}"
+            )
             print(f"{Fore.RED}[!] Also install: sudo apt install python3-tk{Style.RESET_ALL}")
             sys.exit(1)
 
