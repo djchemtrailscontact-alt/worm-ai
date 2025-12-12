@@ -1,6 +1,6 @@
-curl_cffi
-uvicorn
-coincurve
-beautifulsoup4
-pydantic
-colorama
+# Runtime dependencies for Worm-AI
+# For development dependencies, use: pip install -e ".[dev]"
+
+curl_cffi>=0.6.0
+colorama>=0.4.6
+customtkinter>=5.2.0

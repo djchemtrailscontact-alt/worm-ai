@@ -28,13 +28,6 @@ from .exceptions import (
 
 # Configure logging
 logger = logging.getLogger(__name__)
-from .exceptions import (
-    WormAIError,
-    GrokAPIError,
-    NetworkError,
-    AuthenticationError,
-    ValidationError,
-)
 
 # Initialize colorama for cross-platform color support
 colorama_init(autoreset=True)
